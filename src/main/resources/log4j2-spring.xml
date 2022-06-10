@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="info" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_HOME">E:\Log_base\crlclm\lovestory</Property>
+        <Property name="FILE_SIZE">200M</Property>
+        <Property name="log_pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger :%L - %msg%n</Property>
+        <Property name="rolling_file_name">-%d{HH:mm:ss}.%i</Property>
+        <Property name="rollover_strategy_max">30</Property>
+    </Properties>
+
+    <!--先定义所有的appender  输出源，用于定义日志输出的地方 -->
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <!--输出日志的格式不设置默认为:%m%n -->
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+            <ThresholdFilter level="ALL"/>
+        </console>
+
+
+        <!-- 滚动打印出所有的info级别的信息，-->
+        <RollingRandomAccessFile name="FileInfo"
+                                 fileName="${LOG_HOME}/info.log"
+                                 filePattern="${LOG_HOME}/%d{yyyy-MM-dd}/info{rolling_file_name}.log"
+                                 immediateFlush="false" append="true">
+
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+
+            <DefaultRolloverStrategy max="${rollover_strategy_max}"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}">
+                    <IfFileName glob="**/info*.log" />
+                    <IfLastModified age="20d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <!-- 滚动打印出所有的warn级别的信息，-->
+        <RollingRandomAccessFile name="FileWarn"
+                                 fileName="${LOG_HOME}/warn.log"
+                                 filePattern="${LOG_HOME}/%d{yyyy-MM-dd}/warn{rolling_file_name}.log"
+                                 immediateFlush="false" append="true">
+
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+
+            <DefaultRolloverStrategy max="${rollover_strategy_max}"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}">
+                    <IfFileName glob="**/warn*.log" />
+                    <IfLastModified age="20d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <!-- 滚动打印出所有的error级别的信息，-->
+        <RollingRandomAccessFile name="FileError"
+                                 fileName="${LOG_HOME}/error.log"
+                                 filePattern="${LOG_HOME}/%d{yyyy-MM-dd}/error{rolling_file_name}.log"
+                                 immediateFlush="false" append="true">
+
+
+            <ThresholdFilter level="Error" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+
+            <DefaultRolloverStrategy max="${rollover_strategy_max}"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_HOME}">
+                    <IfFileName glob="**/error*.log" />
+                    <IfLastModified age="20d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+    </appenders>
+
+    <loggers>
+        <!--过滤掉spring和hibernate的一些无用的debug信息-->
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.mybatis" level="INFO"/>
+
+        <root level="debug">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="FileInfo"/>
+            <appender-ref ref="FileWarn"/>
+            <appender-ref ref="FileError"/>
+        </root>
+    </loggers>
+</configuration>
