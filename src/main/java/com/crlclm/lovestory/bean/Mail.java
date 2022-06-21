@@ -1,4 +1,4 @@
-package com.crlclm.lovestory.pojo;
+package com.crlclm.lovestory.bean;
 
 import lombok.Data;
 
@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Data
 public class Mail {
+    private String from;
     private String to;
     private String subject;
     private String content;
@@ -20,6 +21,7 @@ public class Mail {
     private List<String> rscPath;
 
     {
+        this.from = "";
         this.to = "";
         this.subject = "";
         this.content = "";
